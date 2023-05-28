@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/products', [ProductController::class, 'index']);
+Route::get('/product/restore/{id}', [ProductController::class, 'restore']);
 Route::post('/storeProduct', [ProductController::class, 'store']);
 Route::put('/updateProduct/{id}', [ProductController::class, 'update']);
 Route::delete('/deleteProduct/{id}', [ProductController::class, 'destroy']);

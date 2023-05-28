@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 //crea la clase productrepository que implementa la interfaz productinterface
 class productrepository implements ProductInterface
@@ -92,9 +93,23 @@ class productrepository implements ProductInterface
 
     public function deleteProduct($id)
     {
-        $product = $this->product->find($id);
-        $product->categories()->detach();
-        $product->images()->delete();
-        $product->delete();
+        try {
+            $product = $this->product->findOrFail($id);
+            $product->delete();
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception('El producto no existe');
+        }
     }
+
+    public function restoreProduct($id)
+    {
+        try {
+            $product = $this->product->withTrashed()->findOrFail($id);
+            $product->restore();
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception('El producto no existe');
+        }
+    }
+        
+    
 }

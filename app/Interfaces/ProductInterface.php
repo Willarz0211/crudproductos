@@ -9,5 +9,6 @@ interface ProductInterface
     public function createProduct($data);
     public function updateProduct($data, $id);
     public function deleteProduct($id);
+    public function restoreProduct($id);
     public function getImagesByProduct($id);
 }

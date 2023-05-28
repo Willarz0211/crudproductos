@@ -161,4 +161,20 @@ class ProductController extends Controller
             ], HttpResponse::HTTP_INTERNAL_SERVER_ERROR, ['Content-Type' => 'application/json']);
         }
     }
+
+    public function restore($id)
+    {
+        try {
+            $product = $this->productInterface->restoreProduct($id);
+            return new Response([
+                'message' => 'Producto restaurado correctamente',
+                'product' => $product
+            ], HttpResponse::HTTP_OK, ['Content-Type' => 'application/json']);
+        } catch (\Exception $th) {
+            return new Response([
+                'error' => 'Error al restaurar el producto',
+                'message' => $th->getMessage()
+            ], HttpResponse::HTTP_INTERNAL_SERVER_ERROR, ['Content-Type' => 'application/json']);
+        }
+    }
 }
