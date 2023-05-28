@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use App\Interfaces\ProductInterface;
 use App\Traits\ImageUploaderTrait;
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Http\Resources\ProductCollection;
 use Illuminate\Support\Facades\DB;
@@ -60,7 +61,7 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
         try {
             DB::beginTransaction();
@@ -110,7 +111,7 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ProductRequest $request, $id)
     {
         try {
             $imagesToAdd = [];
