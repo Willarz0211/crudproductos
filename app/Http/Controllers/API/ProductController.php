@@ -20,7 +20,6 @@ class ProductController extends Controller
 
     public function __construct(ProductInterface $productInterface)
     {
-        //inicializo la variable productInterface
         $this->productInterface = $productInterface;
     }
 
