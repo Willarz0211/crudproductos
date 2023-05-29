@@ -45,6 +45,18 @@ class productrepository implements ProductInterface
 
     }
 
+    public function getAllBrands()
+    {
+        $brand = $this->brand->get();
+        return $brand;
+    }
+
+    public function getAllCategories()
+    {
+        $category = $this->category->get();
+        return $category;
+    }
+
     public function getImagesByProduct($id)
     {
         $product = $this->product->with('images')->find($id);

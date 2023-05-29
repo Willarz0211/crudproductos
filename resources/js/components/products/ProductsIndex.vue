@@ -1,5 +1,11 @@
 <template>
   <div>
+    <div class="d-flex justify-content-end mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <router-link :to="{ name: 'product.create' }" class="btn btn-primary mx-2">Crear Producto</router-link>
+        </div>
+    </div>
+
     <table class="table">
       <thead>
         <tr>
@@ -25,7 +31,7 @@
                 </ul>
             </td>
             <td class="text-center">
-                <button @click="deleteProduct(product.id)" class="btn btn-primary mx-2">Editar</button>
+                <router-link :to="{ name: 'product.edit', params: { id: product.id} }" class="btn btn-primary mx-2">Editar</router-link>
                 <button @click="deleteProduct(product.id)" class="btn btn-danger">Eliminar</button>
             </td>
         </tr>
@@ -44,7 +50,10 @@ export default{
         
         const{products, getProducts, destroyProduct} = useProducts()
 
-        onMounted(getProducts)
+        onMounted(async () => {
+            await getProducts();
+        });
+
 
         const deleteProduct = async (id) => {
             if(!window.confirm('¿Estás seguro de eliminar este producto?')) return;

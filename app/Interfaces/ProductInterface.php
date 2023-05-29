@@ -11,4 +11,6 @@ interface ProductInterface
     public function deleteProduct($id);
     public function restoreProduct($id);
     public function getImagesByProduct($id);
+    public function getAllBrands();
+    public function getAllCategories();
 }

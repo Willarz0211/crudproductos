@@ -177,4 +177,37 @@ class ProductController extends Controller
             ], HttpResponse::HTTP_INTERNAL_SERVER_ERROR, ['Content-Type' => 'application/json']);
         }
     }
+
+    public function getAllBrands()
+    {
+        try {
+            $brands = $this->productInterface->getAllBrands();
+            return new Response([
+                'message' => 'Información de marcas obtenida correctamente',
+                'brands' => $brands
+            ], HttpResponse::HTTP_OK, ['Content-Type' => 'application/json']);
+        } catch (\Exception $th) {
+            return new Response([
+                'error' => 'Error al obtener brands',
+                'message' => $th->getMessage()
+            ], HttpResponse::HTTP_INTERNAL_SERVER_ERROR, ['Content-Type' => 'application/json']);
+        }
+    }
+
+    public function getAllCategories()
+    {
+        try {
+            $categories = $this->productInterface->getAllCategories();
+            return new Response([
+                'message' => 'Información de categorias obtenida correctamente',
+                'categories' => $categories
+            ], HttpResponse::HTTP_OK, ['Content-Type' => 'application/json']);
+        } catch (\Exception $th) {
+            return new Response([
+                'error' => 'Error al obtener categories',
+                'message' => $th->getMessage()
+            ], HttpResponse::HTTP_INTERNAL_SERVER_ERROR, ['Content-Type' => 'application/json']);
+        }
+    }
+
 }
