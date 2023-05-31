@@ -22812,11 +22812,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   };
                 })
               };
-              _context2.next = 3;
+              console.log(requestData);
+              _context2.next = 4;
               return storeProduct(requestData);
-            case 3:
-              responseMessage = _context2.sent;
             case 4:
+              responseMessage = _context2.sent;
+            case 5:
             case "end":
               return _context2.stop();
           }
@@ -22877,67 +22878,81 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  props: {
+    id: {
+      type: String,
+      required: true
+    }
+  },
   components: {
     Multiselect: _vueform_multiselect__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
-  setup: function setup() {
+  setup: function setup(props) {
     var _useProducts = (0,_composables_products__WEBPACK_IMPORTED_MODULE_0__["default"])(),
       brands = _useProducts.brands,
       categories = _useProducts.categories,
+      product = _useProducts.product,
       getBrands = _useProducts.getBrands,
       getCategories = _useProducts.getCategories,
       errors = _useProducts.errors,
-      storeProduct = _useProducts.storeProduct;
+      getProduct = _useProducts.getProduct,
+      updateProduct = _useProducts.updateProduct;
+    var deletedImagesArray = (0,vue__WEBPACK_IMPORTED_MODULE_1__.reactive)([]);
     (0,vue__WEBPACK_IMPORTED_MODULE_1__.onBeforeMount)( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return getBrands();
+            return getProduct(props.id);
           case 2:
             _context.next = 4;
-            return getCategories();
+            return getBrands();
           case 4:
+            _context.next = 6;
+            return getCategories();
+          case 6:
           case "end":
             return _context.stop();
         }
       }, _callee);
     })));
-    var product = (0,vue__WEBPACK_IMPORTED_MODULE_1__.reactive)({
-      name: '',
-      upc: '',
-      part_number: '',
-      brand_id: '',
-      categories: [],
-      images: [],
-      brands: []
-    });
     var saveProduct = /*#__PURE__*/function () {
       var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-        var requestData, responseMessage;
+        var parsedCategories, hasNameParameter, categories, requestData, responseMessage;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
+              parsedCategories = JSON.parse(JSON.stringify(product.categories));
+              hasNameParameter = parsedCategories.every(function (category) {
+                return category.hasOwnProperty('name');
+              });
+              categories = hasNameParameter ? parsedCategories.map(function (category) {
+                return category.id;
+              }) : product.categories.map(function (category) {
+                return category;
+              });
               requestData = {
                 name: product.name,
                 upc: product.upc,
                 part_number: product.part_number,
                 brand_id: product.brand_id,
-                categories: product.categories.map(function (category) {
-                  return category;
-                }),
+                categories: categories,
                 images: product.images.map(function (image) {
                   return {
                     name: image.name,
                     file: image.file
                   };
+                }),
+                deletedImages: deletedImagesArray.map(function (image) {
+                  return image;
                 })
               };
-              _context2.next = 3;
-              return storeProduct(requestData);
-            case 3:
+              console.log(requestData);
+              _context2.next = 7;
+              return updateProduct(props.id, requestData);
+            case 7:
               responseMessage = _context2.sent;
-            case 4:
+            case 8:
             case "end":
               return _context2.stop();
           }
@@ -22949,25 +22964,47 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     }();
     var handleImageUpload = function handleImageUpload(event) {
       var files = event.target.files;
-      var reader = new FileReader();
       var product = this.product;
-      reader.onload = function () {
-        var base64Image = reader.result;
-        for (var i = 0; i < files.length; i++) {
+      var _loop = function _loop() {
+        var reader = new FileReader();
+        var file = files[i];
+        reader.onload = function () {
+          var base64Image = reader.result;
           var image = {
-            name: files[i].name,
-            file: base64Image
+            name: file.name,
+            file: base64Image,
+            url: true
           };
           product.images.push(image);
-        }
+        };
+        reader.readAsDataURL(file);
       };
-      reader.readAsDataURL(files[0]);
+      for (var i = 0; i < files.length; i++) {
+        _loop();
+      }
+    };
+    var removeImages = function removeImages(id) {
+      var index = product.images.findIndex(function (image) {
+        return image.id === id;
+      });
+      if (index !== -1) {
+        product.images.splice(index, 1);
+        var input = document.getElementById('images');
+        input.value = '';
+      }
+      if (id !== undefined) {
+        deletedImagesArray.push({
+          id: id
+        });
+      }
     };
     return {
       brands: brands,
       categories: categories,
       product: product,
       errors: errors,
+      deletedImagesArray: deletedImagesArray,
+      removeImages: removeImages,
       saveProduct: saveProduct,
       handleImageUpload: handleImageUpload
     };
@@ -23239,10 +23276,16 @@ var _hoisted_14 = {
 var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
   "for": "images"
 }, "Imágenes:", -1 /* HOISTED */);
-var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+var _hoisted_16 = {
+  "class": "mt-2"
+};
+var _hoisted_17 = ["src"];
+var _hoisted_18 = ["src"];
+var _hoisted_19 = ["onClick"];
+var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
   type: "submit",
   "class": "btn btn-primary"
-}, "Crear Producto", -1 /* HOISTED */);
+}, "Actualizar Producto", -1 /* HOISTED */);
 
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Multiselect = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Multiselect");
@@ -23302,7 +23345,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         value: category.id
       };
     }) : []
-  }, null, 8 /* PROPS */, ["modelValue", "options"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <Select2 v-model=\"myValue\" :options=\"myOptions\" :settings=\"{ settingOption: value, settingOption: value }\" @change=\"myChangeEvent($event)\" @select=\"mySelectEvent($event)\" />\r\n            <h4>Value: {{ myValue }}</h4>\r\n            <select id=\"categories\" v-model=\"product.categories \" class=\"form-control\" multiple>\r\n                <option v-for=\"category in categories\" :value=\"category.id\" :key=\"category.id\">{{ category.name }}</option>\r\n            </select> ")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [_hoisted_15, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+  }, null, 8 /* PROPS */, ["modelValue", "options"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [_hoisted_15, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
     type: "file",
     id: "images",
     onChange: _cache[5] || (_cache[5] = function () {
@@ -23310,7 +23353,32 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }),
     multiple: "",
     "class": "form-control"
-  }, null, 32 /* HYDRATE_EVENTS */)]), _hoisted_16], 32 /* HYDRATE_EVENTS */)], 64 /* STABLE_FRAGMENT */);
+  }, null, 32 /* HYDRATE_EVENTS */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($setup.product.images, function (image, index) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", {
+      key: index
+    }, [image.url ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
+      key: 0,
+      src: image.file,
+      alt: "Imagen del producto",
+      style: {
+        "width": "200px",
+        "height": "auto"
+      }
+    }, null, 8 /* PROPS */, _hoisted_17)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
+      key: 1,
+      src: "/product_images/".concat(image.name),
+      alt: "Imagen del producto",
+      style: {
+        "width": "200px",
+        "height": "auto"
+      }
+    }, null, 8 /* PROPS */, _hoisted_18)), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+      type: "button",
+      onClick: function onClick($event) {
+        return $setup.removeImages(image.id);
+      }
+    }, "Eliminar", 8 /* PROPS */, _hoisted_19)]);
+  }), 128 /* KEYED_FRAGMENT */))])])]), _hoisted_20], 32 /* HYDRATE_EVENTS */)], 64 /* STABLE_FRAGMENT */);
 }
 
 /***/ }),
@@ -23503,7 +23571,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 function useProducts() {
   var products = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
-  var product = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)({});
+  var product = (0,vue__WEBPACK_IMPORTED_MODULE_0__.reactive)({});
   var brands = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)([]);
   var categories = (0,vue__WEBPACK_IMPORTED_MODULE_0__.reactive)([]);
   var router = (0,vue_router__WEBPACK_IMPORTED_MODULE_2__.useRouter)();
@@ -23539,8 +23607,9 @@ function useProducts() {
             return axios__WEBPACK_IMPORTED_MODULE_1___default().get('/api/product/' + id);
           case 2:
             response = _context2.sent;
-            product.value = response.data.product;
-          case 4:
+            Object.assign(product, response.data.product);
+            product.brand_id = response.data.product.brand_id.id;
+          case 5:
           case "end":
             return _context2.stop();
         }
@@ -23627,42 +23696,79 @@ function useProducts() {
       return _ref5.apply(this, arguments);
     };
   }();
-  var destroyProduct = /*#__PURE__*/function () {
-    var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(product) {
+  var updateProduct = /*#__PURE__*/function () {
+    var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(id, $requestData) {
       var response;
       return _regeneratorRuntime().wrap(function _callee6$(_context6) {
         while (1) switch (_context6.prev = _context6.next) {
           case 0:
-            _context6.prev = 0;
-            _context6.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_1___default()["delete"]('/api/deleteProduct/' + product);
-          case 3:
+            errors.value = '';
+            _context6.prev = 1;
+            _context6.next = 4;
+            return axios__WEBPACK_IMPORTED_MODULE_1___default().put('/api/updateProduct/' + id, $requestData);
+          case 4:
             response = _context6.sent;
-            return _context6.abrupt("return", response.data.message);
+            _context6.next = 7;
+            return router.push({
+              name: 'product.index'
+            });
           case 7:
-            _context6.prev = 7;
-            _context6.t0 = _context6["catch"](0);
-            return _context6.abrupt("return", _context6.t0.response.data.message);
+            return _context6.abrupt("return", response.data.message);
           case 10:
+            _context6.prev = 10;
+            _context6.t0 = _context6["catch"](1);
+            console.log(_context6.t0.response.data.errores);
+            errors.value = _context6.t0.response.data.errores;
+            console.log(errors.value);
+          case 15:
           case "end":
             return _context6.stop();
         }
-      }, _callee6, null, [[0, 7]]);
+      }, _callee6, null, [[1, 10]]);
     }));
-    return function destroyProduct(_x3) {
+    return function updateProduct(_x3, _x4) {
       return _ref6.apply(this, arguments);
+    };
+  }();
+  var destroyProduct = /*#__PURE__*/function () {
+    var _ref7 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7(product) {
+      var response;
+      return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+        while (1) switch (_context7.prev = _context7.next) {
+          case 0:
+            _context7.prev = 0;
+            _context7.next = 3;
+            return axios__WEBPACK_IMPORTED_MODULE_1___default()["delete"]('/api/deleteProduct/' + product);
+          case 3:
+            response = _context7.sent;
+            return _context7.abrupt("return", response.data.message);
+          case 7:
+            _context7.prev = 7;
+            _context7.t0 = _context7["catch"](0);
+            return _context7.abrupt("return", _context7.t0.response.data.message);
+          case 10:
+          case "end":
+            return _context7.stop();
+        }
+      }, _callee7, null, [[0, 7]]);
+    }));
+    return function destroyProduct(_x5) {
+      return _ref7.apply(this, arguments);
     };
   }();
   return {
     brands: brands,
     categories: categories,
     products: products,
+    product: product,
     errors: errors,
     getProducts: getProducts,
+    getProduct: getProduct,
     getBrands: getBrands,
     getCategories: getCategories,
     destroyProduct: destroyProduct,
-    storeProduct: storeProduct
+    storeProduct: storeProduct,
+    updateProduct: updateProduct
   };
 }
 
@@ -23696,9 +23802,10 @@ var routes = [{
   name: 'product.create',
   component: _components_products_ProductsCreate_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
 }, {
-  path: '/edit/:id',
+  path: '/products/:id/edit',
   name: 'product.edit',
-  component: _components_products_ProductsEdit_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
+  component: _components_products_ProductsEdit_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
+  props: true
 }];
 var router = (0,vue_router__WEBPACK_IMPORTED_MODULE_3__.createRouter)({
   history: (0,vue_router__WEBPACK_IMPORTED_MODULE_3__.createWebHistory)(),

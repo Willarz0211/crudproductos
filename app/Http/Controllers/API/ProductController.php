@@ -11,6 +11,7 @@ use App\Traits\ImageUploaderTrait;
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResource;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
@@ -89,7 +90,22 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $product = $this->productInterface->getProductById($id);
+            // Obtener la URL completa de la imagen utilizando el path en el servidor
+            foreach ($product->images as $image) {
+                $image->path = url($image->path);
+            }
+            return new Response([
+                'message' => 'Producto obtenido correctamente',
+                'product' => new ProductResource($product)
+            ], HttpResponse::HTTP_OK, ['Content-Type' => 'application/json']);
+        } catch (\Exception $th) {
+            return new Response([
+                'error' => 'Error al obtener el producto',
+                'message' => $th->getMessage()
+            ], HttpResponse::HTTP_INTERNAL_SERVER_ERROR, ['Content-Type' => 'application/json']);
+        }
     }
 
     /**
@@ -112,6 +128,7 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, $id)
     {
+        // dd($request->all());
         try {
             $imagesToAdd = [];
             DB::beginTransaction();
@@ -120,14 +137,19 @@ class ProductController extends Controller
                     if(!$existing_images->contains('name', $new_image['name'])){
                         array_push($imagesToAdd, $new_image);
                     }
-                }     
+                } 
+                if(!empty($request->deletedImages))
+                {
+                    $deletedImages = $this->productInterface->getImagesByArrayId($request->deletedImages);
+                    $this->deleteImages($deletedImages);
+                }   
                 $image_array = $this->uploadImages($imagesToAdd, 'product_images/');
                 $request->merge(['images' => $image_array]);
                 $product = $this->productInterface->updateProduct($request->all(), $id);
             DB::commit();
             return new Response([
                 'message' => 'Producto actualizado correctamente',
-                // 'product' => $product
+                'product' => $product
             ], HttpResponse::HTTP_OK, ['Content-Type' => 'application/json']);
             
         } catch (\Exception $th) {

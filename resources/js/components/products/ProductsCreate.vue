@@ -93,7 +93,8 @@ export default{
                     name: image.name,
                     file: image.file,
                 })),
-            };
+            }; 
+            console.log(requestData);
             const responseMessage = await storeProduct(requestData);
         };
 

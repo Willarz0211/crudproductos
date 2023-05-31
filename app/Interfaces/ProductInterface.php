@@ -13,4 +13,5 @@ interface ProductInterface
     public function getImagesByProduct($id);
     public function getAllBrands();
     public function getAllCategories();
+    public function getImagesByArrayId($ids);
 }

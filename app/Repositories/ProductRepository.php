@@ -32,16 +32,30 @@ class productrepository implements ProductInterface
         $this->category = $category;
     }
 
-    //implementa la funcion getallproducts de la interfaz productinterface
     public function getAllProducts()
     {
-        // $products = $this->product->with('brand')->with('images')->with('categories')->get();
-        $products = $this->product::with('brand')->with('images')->with('categories')->get();
+        $products = $this->product::select('product.*')
+            ->join('brand', 'product.brand_id', '=', 'brand.id')
+            ->join('image', 'product.id', '=', 'image.product_id')
+            ->join('category_product', 'product.id', '=', 'category_product.product_id')
+            ->join('category', 'category_product.category_id', '=', 'category.id')
+            ->distinct()
+            ->get();
+        // $products = $this->product::with('brand')->with('images')->with('categories')->get();
         return $products;
     }
 
     public function getProductById($id)
     {
+        $product = $this->product::select('product.*')
+            ->where('product.id', '=', $id)
+            ->join('brand', 'product.brand_id', '=', 'brand.id')
+            ->join('image', 'product.id', '=', 'image.product_id')
+            ->join('category_product', 'product.id', '=', 'category_product.product_id')
+            ->join('category', 'category_product.category_id', '=', 'category.id')
+            ->first();
+        // $product = $this->product->with('brand')->with('images')->with('categories')->find($id);
+        return $product;
 
     }
 
@@ -61,6 +75,12 @@ class productrepository implements ProductInterface
     {
         $product = $this->product->with('images')->find($id);
         return $product->images;
+    }
+
+    public function getImagesByArrayId($ids)
+    {
+        $images = $this->image->whereIn('id', $ids)->get();
+        return $images;
     }
 
     public function createProduct($data)
@@ -98,6 +118,9 @@ class productrepository implements ProductInterface
                 'name' => $image['name'],
                 'path' => $image['path'],
             ]);
+        }
+        foreach ($data['deletedImages'] as $image) {
+            $product->images()->where('id', $image)->delete();
         }
         $product->saveorfail();
         return $product;

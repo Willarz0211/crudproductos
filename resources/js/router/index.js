@@ -16,9 +16,10 @@ import ProductEdit from '../components/products/ProductsEdit.vue';
             component: ProductCreate
         },
         {
-            path: '/edit/:id',
+            path: '/products/:id/edit',
             name: 'product.edit',
-            component: ProductEdit
+            component: ProductEdit,
+            props: true
         }
     ];
 

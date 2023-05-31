@@ -21,4 +21,9 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+Route::get('product_images/{filename}', function ($filename) {
+    $path = storage_path('app/product_images/' . $filename);
+    return response()->file($path);
+})->where('filename', '.*');
+
 Route::view('/{any}', 'home')->where('any', '.*');

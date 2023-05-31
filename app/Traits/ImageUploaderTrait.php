@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 trait ImageUploaderTrait
 {
@@ -31,14 +32,12 @@ trait ImageUploaderTrait
             ]);
         }
         return $arrayImages;
-
-        // File::exists(str_replace('\\', '/', storage_path('app'.'\\'.$path))) ? File::delete(str_replace('\\', '/', storage_path('app'.'\\'.$path))) : '';
     }
 
-    public function deleteImages($imageArray, $path)
+    public function deleteImages($imageArray)
     {
         foreach ($imageArray as $image) {
-            $image_path = str_replace('\\', '/', storage_path('app' . '\\' . $image['path']));
+            $image_path = str_replace('\\', '/', storage_path('app' . '\\' . $image->path));
             File::exists($image_path) ? File::delete($image_path) : '';
         }
     }
