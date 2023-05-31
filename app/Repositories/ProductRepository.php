@@ -36,7 +36,7 @@ class productrepository implements ProductInterface
     {
         $products = $this->product::select('product.*')
             ->join('brand', 'product.brand_id', '=', 'brand.id')
-            ->join('image', 'product.id', '=', 'image.product_id')
+            ->leftjoin('image', 'product.id', '=', 'image.product_id')
             ->join('category_product', 'product.id', '=', 'category_product.product_id')
             ->join('category', 'category_product.category_id', '=', 'category.id')
             ->distinct()
@@ -50,7 +50,7 @@ class productrepository implements ProductInterface
         $product = $this->product::select('product.*')
             ->where('product.id', '=', $id)
             ->join('brand', 'product.brand_id', '=', 'brand.id')
-            ->join('image', 'product.id', '=', 'image.product_id')
+            ->leftjoin('image', 'product.id', '=', 'image.product_id')
             ->join('category_product', 'product.id', '=', 'category_product.product_id')
             ->join('category', 'category_product.category_id', '=', 'category.id')
             ->first();
