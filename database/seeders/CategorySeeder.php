@@ -25,6 +25,6 @@ class CategorySeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('category')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-        DB::table('category')->insert($brands);
+        DB::table('category')->insert($categories);
     }
 }
